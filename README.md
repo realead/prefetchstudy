@@ -37,4 +37,37 @@ prefetched version war 4 times slower on my machine.
 
 Use `sh run_prefetch_slower.sh` to run this experiment.
 
+### prefetch_static
+
+The idea is to fetch a cache-line, which will be needed in the next iteration and to interleave calculation with data reading.
+
+However, the hardware seems to be doing Ok on its own - there was no speed-up.
+
+The core implementation is:
+
+
+    void operator()(){
+        int cnt=0;
+        for(int i=0;i<n;i+=BLOCK_SIZE){
+            //prefetch memory block used in the next iteration
+            if(prefetch){
+                __builtin_prefetch(mem+cnt+BLOCK_SIZE);
+            }
+            //process a cache line
+            for(int j=0;j<BLOCK_SIZE;j++){
+                double d=mem[cnt];
+                //do some work, which cannot be optimized away
+                for(int t=0;t<times;t++){
+                    d=(d-mem[cnt])+mem[cnt];
+                }
+                result+=d;
+                cnt++;
+            }
+        }
+    } 
+
+the number of operation could be variable.
+
+Use `sh run_prefetch_static.sh` to run this experiment.
+
 
