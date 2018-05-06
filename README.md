@@ -35,7 +35,7 @@ Here is the core of the implementation:
 
 prefetched version war 4 times slower on my machine. 
 
-Use `sh run_prefetch_slower.sh` to run this experiment.
+Use `sh run_prefetch.sh slower` to run this experiment.
 
 ### prefetch_static
 
@@ -68,6 +68,6 @@ The core implementation is:
 
 the number of operation could be variable.
 
-Use `sh run_prefetch_static.sh` to run this experiment.
+Use `sh run_prefetch.sh static` to run this experiment.
 
 
