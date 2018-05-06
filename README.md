@@ -71,3 +71,34 @@ the number of operation could be variable.
 Use `sh run_prefetch.sh static` to run this experiment.
 
 
+### prefetch_static2
+
+The idea is to prefetch a cache-line, which will be needed in an iteration somewhere further in the future
+
+
+
+The difference to the first implementation is the prefech-line:
+
+
+    __builtin_prefetch(mem+cnt+30*BLOCK_SIZE);
+
+the prefetched memory is 30 blocks in the future and not only one.
+
+The timings are:
+
+    #work	time no prefetch	time prefetch	factor
+    0	0.025815299999999999	0.025547713499999999	1.0104739901674566
+    1	0.025897100999999999	0.0252688605	1.0248622410179518
+    2	0.025598140500000002	0.025570628500000001	1.0010759219312892
+    3	0.025965724499999999	0.025574537000000001	1.0152959758372164
+    4	0.027150131000000001	0.025689754499999998	1.0768466506754668
+    5	0.034004219500000002	0.034286592499999997	0.99176433178654322
+
+It looks like as if the CPU is doing a very decent job interleaving reading and calculating, when the differences between reading and calculating are big. However, it might use a little bit help when the times for fetching data and calculating are almost equal (here in the case of `work=4`. This were our prefetch helps a little - the CPU doesn't have to think and prefetches data which might be used in the future.
+
+Obviously, prefetching the next block will not help due to latency of the memory - so we need to prefetch data further in the future, so even with latency the data will be on time.
+
+Use `sh run_prefetch.sh static2` to run this experiment.
+
+
+
