@@ -101,4 +101,41 @@ Obviously, prefetching the next block will not help due to latency of the memory
 Use `sh run_prefetch.sh static2` to run this experiment.
 
 
+### prefetch_binsearch
 
+In the examples above the memory run almost on its limit, there was not much to improve. During the binary search the memory bandwidth isn't exhausted at all, the bottle-neck is the latency of the access - we can afford to fetch twice amount of data and discard the one half not needed later without a major negative impact.
+
+Here is the code:
+
+
+       int binarySearch(double *array, int number_of_elements, double key) {
+         int low = 0, high = number_of_elements-1, mid;
+         while(low <= high) {
+                 mid = (low + high)/2;
+            if(prefetch){
+              // low path
+              __builtin_prefetch (&array[(mid + 1 + high)/2], 0, 1);
+              // high path
+              __builtin_prefetch (&array[(low + mid - 1)/2], 0, 1);
+            }
+            double val=array[mid]*d/d*d/d*d/d*d/d*d/d*d/d*d/d*d/d;
+            if(val< key)
+                     low = mid + 1; 
+            else if(val == key)
+                     return mid;
+            else if(val > key)
+                      high = mid-1;
+         }
+         return -1;
+   }
+
+the CPU prefetcher cannot prefetch anything, because the index must be calculated. There is however not much to win - there is clearly not enough calculations going on.
+
+timings are:
+
+    time no prefetch	time prefetch	factor
+    22.215248963000001	16.594471300999999	1.3387138740395597
+
+About 30% faster!
+
+Use `sh run_prefetch.sh binsearch` to run this experiment.
