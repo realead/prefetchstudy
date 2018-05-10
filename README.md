@@ -10,7 +10,11 @@ https://github.com/realead/timeitcpp is used as submodule, thus clone it with `g
 
 ### Prerequisites
 
-    gcc-compiler
+    g++-compiler, c++11
+
+### Remarks
+   
+   See also my answer on stackoverflow: https://stackoverflow.com/a/50280085/5769463
 
 ## Experiments
 
@@ -144,14 +148,14 @@ Use `sh run_prefetch.sh binsearch` to run this experiment.
 
 The idea of this experiment is: 
 
-    - a task where latency is the bottle-neck
-    - for this to work, the next address must depend on data which was fetched in the current state
-    - we have an oracle which predicts the address of a read access in the future
+   - a task where latency is the bottle-neck
+   - for this to work, the next address must depend on data which was fetched in the current state
+   - we have an oracle which predicts the address of a read access in the future
 
 That leads to:
 
 
-   void operator()(){
+    void operator()(){
         //let the oracle to see "start"-steps in the future
         unsigned int prefetch_index=0;
         for(int i=0;i<start;i++)
@@ -170,7 +174,7 @@ That leads to:
             prefetch_index=next(prefetch_index);  //update oracel
             index=next(mem[index]);               //find next address, important dependent on the currently read data!
         }
-   }
+    }
 
 the timings are:
 
